@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="google-signin-client_id" content="558578790861-6i778e36kmi2atquhrg3dfn1u05i0l0c.apps.googleusercontent.com">
+    <title>Login</title>
+    <h1 class="hea">Knowledge Search</h1>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+<style>
+
+</style>
+</head>
+<body>
+    <script type="text/javascript">
+        function onsignin(googleUser){
+            location.replace('home.html');
+        }
+        function login() {
+            if (document.getElementById('username').value.length > 0 && document.getElementById('password').value.length > 0) {
+                if (document.getElementById('username').value == localStorage.getItem('UserName')
+                    && document.getElementById('password').value == localStorage.getItem('Password')) {
+                    location.replace('homePage.html');
+                }
+                else {
+                    alert('Please enter correct details !');
+                }
+            }
+            else
+            {
+                alert('Dear user, you have missed entering few details');
+            }
+        }
+    </script>
+
+
+        <div class = "log">
+            <div class="form">
+                <form class="login">
+
+                    <p><b>User Name</b>:<input type ="text" id="username" placeholder ="username"/></p><br>
+                   <p> <b>Password</b>:  <input type ="password" id="password" placeholder ="password"/></p>
+                    <p class="ly"><a class ="message" href="Register.html">not yet Registered? Register</a></p>
+                    <button class="btn btn-primary" onclick="login()">Login</button><br>
+                    <p class="para">-------- Signin with--------</p>
+                    <div class="g-signin2" data-onsuccess="onsignin"></div>
+                </form>
+
+
+            </div>
+
+</div>
+
+
+
+
+</body>
+</html>

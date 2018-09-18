@@ -1,0 +1,38 @@
+.login {
+
+margin-top: 20px;
+    max-width: 700px;
+    margin-left: 450px;
+    border-radius: 10px;
+   }
+
+label {
+    position: absolute;
+    left: 13px;
+    font-size: 22px;
+}
+.g-signin2{
+    margin-top:10px ;
+    margin-left: 80px;
+    color: #1ab188;
+
+}
+.para{
+    margin-left: 60px;
+}
+.ly{
+    margin-left: 50px;
+}
+.hea{
+    margin-top: 50Px;
+    margin-left:450px ;
+}
+.katta{
+    margin-top: 20px;
+    max-width: 700px;
+    margin-left: 300px;
+    border-radius: 10px;
+}
+body{
+    background-color:beige;
+    }
