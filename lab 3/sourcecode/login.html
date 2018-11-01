@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://code.angularjs.org/1.1.1/angular.js"></script>
+</head>
+
+<style>
+
+    body {
+        min-height:100%;
+        background-image: url("images/white-squares-background.jpg");
+    }
+
+    h1 {
+        color: #e74c3c;
+        font-family: 'Roboto';
+        text-transform: uppercase;
+        font-weight: 900;
+        font-size: 25px;
+        text-align: center;
+    }
+
+</style>
+
+<script>
+
+    /**
+     */
+    var myapp = angular.module('app',[]);
+    myapp.run(function ($http) {
+        // Sends this header with any AJAX request
+        $http.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+        // Send this header only in post requests. Specifies you are sending a JSON object
+        $http.defaults.headers.post['dataType'] = 'json'
+    });
+    myapp.controller('appController',function($scope,$http){
+        $scope.loginForm = function(){
+            var dataParams = {
+                'email' : $scope.email,
+                'password' : $scope.password
+            };
+            console.log("$scope.email -->"+$scope.form.email+ " & $scope.password -->"+$scope.form.password);
+            var config = {
+                headers : {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                }
+            }
+            var req = $http.post('http://127.0.0.1:8081/login',$scope.form);
+            req.success(function(data, status, headers, config) {
+                $scope.message = data;
+                alert(data);
+                if(data != null && data == "Successful Login"){
+                    localStorage.setItem("email_id",$scope.form.email);
+                    window.location.href = 'homepage.html';
+                }
+            });
+            req.error(function(data, status, headers, config) {
+                alert( "failure message: " + JSON.stringify({data: data}));
+            });
+
+        };
+    });
+
+
+</script>
+
+<body ng-app="app" ng-controller="appController">
+
+<div class="container">
+    <h1>Login</h1>
+    <form class="form-horizontal" ng-submit="loginForm()">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="email">Email:</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" placeholder="Enter Email Address" ng-model="form.email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="password">Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" placeholder="Enter Password" ng-model="form.password">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label><input type="checkbox" name="remember"> Remember me</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <br/><br/>
+                <label>Haven't Registered yet? <a href="register.html">Register Now</a></label>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.angularjs.org/1.1.1/angular.js"></script>
+    <!-- Required Import for Data Binding -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.1/angular-sanitize.js"></script>
+</head>
+
+<style>
+
+    body {
+        font-family: "Lato", sans-serif;
+        transition: background-color .5s;
+        min-height:100%;
+        background-image: url("images/white-squares-background.jpg");
+    }
+
+    .sidenav {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidenav a:hover {
+        color: #f1f1f1;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    #main {
+        transition: margin-left .5s;
+        padding: 16px;
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {padding-top: 15px;}
+        .sidenav a {font-size: 18px;}
+    }
+</style>
+
+<script>
+
+    $(function() {
+        var signedInUser = null;
+        var loginEmail = localStorage.getItem("email_id");
+        if(loginEmail != null){
+            signedInUser = loginEmail;
+        } else {
+            signedInUser = "Guest";
+        }
+        var greeting = "Hi, "+signedInUser;
+        $("#homePage").html(greeting);
+    });
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+        document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+        document.body.style.backgroundColor = "white";
+    }
+
+    var myapp = angular.module('app',['ngSanitize']);
+    myapp.run(function ($http) {
+        // Sends this header with any AJAX request
+        $http.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+        // Send this header only in post requests. Specifies you are sending a JSON object
+        $http.defaults.headers.post['dataType'] = 'json'
+    });
+
+    myapp.controller('appController',function($scope,$http){
+
+        $scope.getRecipeDetails = function () {
+
+            var recipeInput = $scope.recipe;
+
+            alert(recipeInput);
+            // Hiding Error, Output first
+            $("#fielderror").hide();
+            $("#recipes").hide();
+
+            // Validations
+            if (!recipeInput) {
+                // Throw error to say they should not be empty
+                $scope.fielderrorhtml = "Input text cannot be empty";
+                $("#fielderror").show();
+                return false;
+            }
+
+            var recipesoutput = $http.get("https://api.edamam.com/search?q=" + recipeInput + "&app_id=0da1fc3a" +
+                "&app_key=1e189e176e3f058fab55715279137a81&from=0&to=10&ingr=3");
+            recipesoutput.success(function (data) {
+                if (data == null || data.hits == null || data.hits.length == 0) {
+                    // Throw error to say no records found
+                    $scope.fielderrorhtml = "No recipe details found for the input text : " + recipeInput;
+                    $("#fielderror").show();
+                    return false;
+                }
+                $scope.recipeDetails = data.hits;
+                $("#recipes").show();
+            })
+            recipesoutput.error(function (data) {
+                alert("There was some error processing your request. Please try after some time.");
+            });
+        };
+
+        $scope.editProfile = function () {
+            $("#recipeDiv").hide();
+            $("#editProfile").show();
+
+            var dataParams = {
+                'email' : localStorage.getItem("email_id")
+            };
+            var config = {
+                headers : {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                }
+            }
+            var req = $http.post('http://127.0.0.1:8081/fetchInfo',localStorage.getItem("email_id"));
+            req.success(function(data, status, headers, config) {
+                $scope.message = data;
+                alert(data);
+                console.log("");
+                if(data != null){
+                    //window.location.href = 'homepage.html';
+                }
+            });
+            req.error(function(data, status, headers, config) {
+                alert( "failure message: " + JSON.stringify({data: data}));
+            });
+        };
+
+        $scope.updateProfile = function(){
+            alert("Profile Updated Successfully");
+            var dataParams = {
+                'First_Name' : $scope.firstName,
+                'Last_Name' : $scope.lastName,
+                'Password' : $scope.password
+            };
+            var config = {
+                headers : {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                }
+            }
+            var req = $http.post('http://127.0.0.1:8081/update',$scope.form);
+            req.success(function(data, status, headers, config) {
+                $scope.message = data;
+                alert(data);
+            });
+            req.error(function(data, status, headers, config) {
+                alert( "failure message: " + JSON.stringify({data: data}));
+            });
+
+        };
+    });
+
+
+</script>
+
+<body ng-app="app" ng-controller="appController">
+<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Navigation</span>
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="homepage.html">Home</a>
+    <a ng-click="editProfile()">Edit my Profile</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<div id="main" align="center">
+    <h2 id="homePage"></h2>
+</div>
+
+<div class="container" id="recipeDiv">
+    <div align="center" >
+        <strong><p>Search Edamam API Details</p></strong>
+        <h2 style="color: #818181">Recipe Details</h2>
+        <br/>
+        <label style="color: #818181">Enter text to get Recipe Details : </label>
+        <input type="text" ng-model="recipe" />
+        <button class="btn-success" ng-click="getRecipeDetails()"> Show Recipe Details </button>
+    </div>
+
+    <div class="row" id="recipes" style="display: none">
+        <br/>
+        <br/>
+        <div id="recipeDetails" ng-repeat="recipeDet in recipeDetails">
+            <div class="col-md-4" style="overflow: hidden;height: 100%">
+                <div class="thumbnail">
+                    <a href="{{recipeDet.recipe.image}}" target="_blank">
+                        <img src="{{recipeDet.recipe.image}}" alt="Image" style="width: 100%">
+                    </a>
+                    <div class="caption center-block">
+                        <p style="color: blueviolet"><strong>{{recipeDet.recipe.label}}</strong></p>
+                    </div>
+                    <label>Source of the Recipe : </label>
+                    <a target="_blank" href="{{recipeDet.recipe.url}}">{{recipeDet.recipe.source}}</a>
+                    <br/>
+                    <label>Ingredients :</label>
+                    <ul ng-repeat="ingredient in recipeDet.recipe.ingredientLines">
+                        <li>{{ingredient}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <!-- Hiding the errors first using Style display:none-->
+    <strong><p ng-bind-html="fielderrorhtml" id="fielderror" style="display: none;color: red;" align="center"></p></strong>
+    <br/>
+</div>
+
+
+<div id="editProfile" style="display: none" align="center">
+    <strong>Your Profile</strong>
+
+    <form class="form-horizontal" ng-submit="registerForm()">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="firstName">Your First Name:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="firstName" placeholder="Enter First Name" ng-model="form.firstName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="lastName">Your Last Name:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="lastName" placeholder="Enter Last Name" ng-model="form.lastName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="password">Your Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" placeholder="Enter Password" ng-model="form.password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="confirmPassword">Your Confirm Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confrim Password" ng-model="form.confirmPassword">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-primary" ng-click="updateProfile()">Update my Profile</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

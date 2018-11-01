@@ -1,0 +1,12 @@
+{
+  "name": "Lab3",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "html": "^1.0.0"
+  }
+}

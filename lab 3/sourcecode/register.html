@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://code.angularjs.org/1.1.1/angular.js"></script>
+</head>
+
+<style>
+
+    body {
+        min-height:100%;
+        background-image: url("images/white-squares-background.jpg");
+    }
+
+    h1 {
+        color: #e74c3c;
+        font-family: 'Roboto';
+        text-transform: uppercase;
+        font-weight: 900;
+        font-size: 25px;
+        text-align: center;
+    }
+
+</style>
+
+<script>
+
+    /**
+     * Created by user on 4/2/2018.
+     */
+    var myapp = angular.module('app',[]);
+    myapp.run(function ($http) {
+        // Sends this header with any AJAX request
+        $http.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+        // Send this header only in post requests. Specifies you are sending a JSON object
+        $http.defaults.headers.post['dataType'] = 'json'
+    });
+    myapp.controller('appController',function($scope,$http){
+        $scope.registerForm = function(){
+            var dataParams = {
+                'First_Name' : $scope.firstName,
+                'Last_Name' : $scope.lastName,
+                'Email_Id' : $scope.email,
+                'Password' : $scope.password
+            };
+            var config = {
+                headers : {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                }
+            }
+            var req = $http.post('http://127.0.0.1:8081/register',$scope.form);
+            req.success(function(data, status, headers, config) {
+                $scope.message = data;
+                alert(data);
+            });
+            req.error(function(data, status, headers, config) {
+                alert( "failure message: " + JSON.stringify({data: data}));
+            });
+
+        };
+    });
+
+
+</script>
+
+<body ng-app="app" ng-controller="appController">
+<div class="container">
+    <h1>Sign Up</h1>
+    <form class="form-horizontal" ng-submit="registerForm()">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="firstName">First Name:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="firstName" placeholder="Enter First Name" ng-model="form.firstName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="lastName">Last Name:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="lastName" placeholder="Enter Last Name" ng-model="form.lastName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="email">Email:</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" placeholder="Enter Email Address" ng-model="form.email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="password">Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" placeholder="Enter Password" ng-model="form.password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="confirmPassword">Confirm Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confrim Password" ng-model="form.confirmPassword">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Register</button>
+                <br/><br/>
+                <label>Already Registered ? <a href="login.html">Login Now</a></label>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
